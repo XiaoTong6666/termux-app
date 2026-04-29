@@ -1068,6 +1068,9 @@
     <string name="content_ssh_list_toast_hint">正在初始化中，请耐心等待...</string>
     <string name="content_ssh_list_toast_ssh_hint">初次使用，正在初始化SSH环境...</string>
     <string name="content_ssh_list_toast_ssh_wait">环境尚未就绪，请稍候...</string>
+    <string name="zt_terminal_unavailable_command_not_sent">终端未就绪，命令未发送</string>
+    <string name="zt_terminal_unavailable_key_not_sent">终端未就绪，按键未发送</string>
+    <string name="zt_terminal_unavailable_text_not_read">终端未就绪，无法读取终端内容</string>
     <string name="content_ssh_remove_device">删除设备</string>
     <string name="content_ssh_remove_device_dialog">"确定要删除'%s'吗？\n(IP: '%s')"</string>
     <string name="content_ssh_remove_ok">已删除</string>
@@ -1306,6 +1309,5 @@
     <string name="deepseek_input_key_error_info_503">可能的问题:\n\n返回503，服务器负载过高，解决方法：请稍后重试您的请求。</string>
     <string name="deepseek_input_key_error_info_other">可能的问题:\n\n返回未能识别的code，服务器可能本次请求断开了？，解决方法：请稍后重试您的请求。</string>
 </resources>
-
 
 

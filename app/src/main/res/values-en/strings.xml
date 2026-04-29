@@ -1284,6 +1284,9 @@ cd ~ &amp;&amp; pkg update -y \n
     <string name="zt_usage_habits_ztermux">ZeroTermux usage habit set successfully. Please go to settings to change the configuration.</string>
     <string name="zt_guide">Double-tap the edge of the screen to bring up the left/right menu bar\nIf you have set the ZT usage habit, use the Volume +\- keys\nIf the left/right sidebar cannot close this window\nLong press here to force close</string>
     <string name="zt_core_date_error">There is an error in the upper and lower data of the core terminal. Please return to the desktop and try again.</string>
+    <string name="zt_terminal_unavailable_command_not_sent">Terminal is not ready. Command was not sent.</string>
+    <string name="zt_terminal_unavailable_key_not_sent">Terminal is not ready. Key was not sent.</string>
+    <string name="zt_terminal_unavailable_text_not_read">Terminal is not ready. Unable to read terminal content.</string>
 
     <string name="deepseek_input_key_error_info_400">Possible issues: \n\nReturns 400 with no DeepSeek Key set or entered the wrong key</string>
     <string name="deepseek_input_key_error_info_401">Possible issues: 401 is returned, API key is wrong, authentication failed, Solution: Please check if your API key is correct</string>
