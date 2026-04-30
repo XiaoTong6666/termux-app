@@ -1,7 +1,10 @@
 plugins {
     id "com.android.application"
-}
 
+}
+// ZeroTermux add {@
+apply plugin: 'kotlin-android'
+// @}
 ext {
     // The packageVariant defines the bootstrap variant that will be included in the app APK.
     // This must be supported by com.termux.shared.termux.TermuxBootstrap.PackageVariant or app will
@@ -38,18 +41,99 @@ android {
 
         implementation project(":terminal-view")
         implementation project(":termux-shared")
+        //ZeroTermux {@
+        def libsuVersion = '5.2.1'
+        implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+        implementation('cn.hotapk:fastandrutils:0.8.0') {
+            exclude group: 'com.android.support'
+        }
+        implementation "com.google.android.material:material:1.12.0"
+        implementation "com.google.guava:guava:31.0.1-jre"
+        implementation 'com.google.code.gson:gson:2.8.6'
+        //网络框架
+        implementation 'com.lzy.net:okgo:3.0.4'
+        //switch Btn
+        implementation 'com.github.iielse:switchbutton:1.0.4'
+
+        implementation 'com.github.getActivity:XXPermissions:11.5'
+        implementation 'com.daimajia.numberprogressbar:library:1.4@aar'
+
+        implementation 'me.laoyuyu.aria:core:3.8.16'
+        annotationProcessor 'me.laoyuyu.aria:compiler:3.8.16'
+
+        // The core module that provides APIs to a shell
+        implementation "com.github.topjohnwu.libsu:core:${libsuVersion}"
+        // Optional: APIs for creating root services. Depends on ":core"
+        implementation "com.github.topjohnwu.libsu:service:${libsuVersion}"
+        // Optional: Provides remote file system support
+        implementation "com.github.topjohnwu.libsu:nio:${libsuVersion}"
+        // debugImplementation 'com.github.getActivity:Logcat:9.6'
+        implementation 'com.scottyab:rootbeer-lib:0.1.0'
+        //OTG0
+        implementation 'me.jahnen:libaums:0.8.0'
+        implementation 'me.jahnen:libaums-httpserver:0.5.3'
+        implementation 'me.jahnen:libaums-storageprovider:0.5.1'
+        implementation 'uk.co.alt236:usbdeviceenumerator:2.0.0'
+        //webview框架
+        implementation 'com.just.agentweb:agentweb:4.0.2'
+        implementation 'com.just.agentweb:download:4.0.2'
+        //颜色取色器
+        implementation 'com.github.rtugeek:colorseekbar:2.0.3'
+        //图片/视频选择器
+        implementation 'com.lcw.library:imagepicker:2.2.7'
+        //滑动器
+        implementation 'com.billy.android:smart-swipe:1.1.0'
+//compat for android support library
+        implementation 'com.billy.android:smart-swipe-x:1.1.0'
+        //glide
+        implementation 'com.github.bumptech.glide:glide:4.10.0'
+        annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
+        //状态栏
+        //https://github.com/gyf-dev/ImmersionBar
+        implementation 'com.geyifeng.immersionbar:immersionbar:3.2.2'
+        // 线性背景
+        implementation 'com.googlecode.plist:dd-plist:1.16'
+        implementation 'com.tananaev:adblib:1.3'
+        implementation 'org.samba.jcifs:jcifs:1.3.3'
+        implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.3.1'
+        implementation 'org.nanohttpd:nanohttpd:2.3.1'
+        api group: 'javax.servlet', name: 'servlet-api', version: '2.5'
+        implementation 'com.hzy:un7zip:+'
+
+        //ZFlie
+        implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
+        //Avnc
+        implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
+        // 二维码
+        implementation 'com.google.zxing:core:3.5.3'
+        // deepseek
+        implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+
+        implementation 'com.mallotec.reb:plugin-locale:1.0.12'
+
+        implementation 'org.jsoup:jsoup:1.22.1'
+        // @}
+//        implementation project(":FHttpServer")
+        //       implementation project(":z_file")
     }
 
     defaultConfig {
         minSdkVersion project.properties.minSdkVersion.toInteger()
         targetSdkVersion project.properties.targetSdkVersion.toInteger()
-        versionCode 118
-        versionName "0.118.0"
-
+        // ZeroTermux modify {@
+        // versionCode 118
+        // versionName "0.118.0"
+        versionCode 117
+        versionName "0.118.3.56"
+        // @}
         if (appVersionName) versionName = appVersionName
         validateVersionName(versionName)
 
-        buildConfigField "String", "TERMUX_PACKAGE_VARIANT", "\"" + project.ext.packageVariant + "\"" // Used by TermuxApplication class
+        buildConfigField "String", "TERMUX_PACKAGE_VARIANT", "\"" + project.ext.packageVariant + "\""
+        // Used by TermuxApplication class
 
         manifestPlaceholders.TERMUX_PACKAGE_NAME = "com.termux"
         manifestPlaceholders.TERMUX_APP_NAME = "Termux"
@@ -68,29 +152,66 @@ android {
 
         splits {
             abi {
-                enable ((gradle.startParameter.taskNames.any { it.contains("Debug") } && splitAPKsForDebugBuilds == "1") ||
+                enable((gradle.startParameter.taskNames.any { it.contains("Debug") } && splitAPKsForDebugBuilds == "1") ||
                     (gradle.startParameter.taskNames.any { it.contains("Release") } && splitAPKsForReleaseBuilds == "1"))
-                reset ()
+                reset()
                 include 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
                 universalApk true
             }
         }
     }
+    // ZeroTermux add {@
+    // 添加以下配置
 
-    signingConfigs {
+    splits.abi {
+        enable true
+        reset()
+        include "x86", "x86_64", "armeabi-v7a", "arm64-v8a"
+        universalApk true
+    }
+    // 添加 Kotlin 编译选项
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+    buildFeatures {
+        dataBinding true
+        buildConfig true
+    }
+    // @}
+
+
+    // ZeroTermux modify {@
+    /*signingConfigs {
         debug {
             storeFile file('testkey_untrusted.jks')
             keyAlias 'alias'
             storePassword 'xrj45yWGLbsO7W0v'
             keyPassword 'xrj45yWGLbsO7W0v'
         }
+    }*/
+    signingConfigs {
+        release {
+            keyAlias System.getenv("KEY_ALIAS") ?: 'phone1'
+            keyPassword System.getenv("KEY_PASSWORD") ?: '654321'
+            storeFile rootProject.file("phone.jks")
+            storePassword System.getenv("STORE_PASSWORD") ?: '123456'
+        }
+        debug {
+            keyAlias System.getenv("KEY_ALIAS") ?: 'phone1'
+            keyPassword System.getenv("KEY_PASSWORD") ?: '654321'
+            storeFile rootProject.file("phone.jks")
+            storePassword System.getenv("STORE_PASSWORD") ?: '123456'
+        }
     }
+    // @}
+
 
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources false // Reproducible builds
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
 
         debug {
@@ -101,9 +222,12 @@ android {
     compileOptions {
         // Flag to enable support for the new language APIs
         coreLibraryDesugaringEnabled true
-
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        // ZeroTermux modify {@
+        // sourceCompatibility JavaVersion.VERSION_1_8
+        // targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+        // @}
     }
 
     externalNativeBuild {
@@ -126,6 +250,17 @@ android {
         jniLibs {
             useLegacyPackaging true
         }
+        //ZeroTermux add {@
+        // 排除重复的 META-INF 文件
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/INDEX.LIST'
+        exclude 'META-INF/io.netty.versions.properties'
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+        // @}
     }
 
     applicationVariants.all { variant ->
@@ -148,7 +283,35 @@ android {
 dependencies {
     testImplementation "junit:junit:4.13.2"
     testImplementation "org.robolectric:robolectric:4.10"
-    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.1.5"
+    // ZeroTermux delete {@
+    // coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:1.1.5"
+    //
+    // ZeroTermux add {@
+    // 语法编辑器
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
+    implementation 'io.github.rosemoe:editor:0.24.4'
+    implementation 'io.github.rosemoe:language-textmate:0.24.4'
+
+    implementation 'androidx.cardview:cardview:1.0.0'
+//    implementation project(path: ':xh_lib')
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation files('libs/commons-logging-1.2.jar')
+    implementation files('libs/commons-net-3.8.0.jar')
+    implementation files('libs/ftplet-api-1.1.1.jar')
+    implementation files('libs/ftpserver-core-1.1.1-edited.jar')
+    implementation files('libs/jlan-5.jar')
+    implementation files('libs/log4j-1.2.17.jar')
+    implementation files('libs/mina-core-2.0.16.jar')
+    implementation files('libs/slf4j-api-1.7.21.jar')
+    implementation files('libs/slf4j-log4j12-1.7.21.jar')
+    implementation files('libs/commons-codec-1.10-rep.jar')
+    def room_version = "2.6.1"  // 使用稳定的版本
+    implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"  // Kotlin 扩展
+    implementation "androidx.biometric:biometric-ktx:1.2.0-alpha05"
+    // @}
 }
 
 task versionName {
@@ -160,8 +323,10 @@ task versionName {
 def validateVersionName(String versionName) {
     // https://semver.org/spec/v2.0.0.html#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
     // ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$
-    if (!java.util.regex.Pattern.matches("^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?\$", versionName))
-        throw new GradleException("The versionName '"  + versionName + "' is not a valid version as per semantic version '2.0.0' spec in the format 'major.minor.patch(-prerelease)(+buildmetadata)'. https://semver.org/spec/v2.0.0.html.")
+    // ZeroTermux delete {@
+    //if (!java.util.regex.Pattern.matches("^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?\$", versionName))
+    //    throw new GradleException("The versionName '" + versionName + "' is not a valid version as per semantic version '2.0.0' spec in the format 'major.minor.patch(-prerelease)(+buildmetadata)'. https://semver.org/spec/v2.0.0.html.")
+    // @}
 }
 
 def downloadBootstrap(String arch, String expectedChecksum, String version) {
@@ -178,7 +343,9 @@ def downloadBootstrap(String arch, String expectedChecksum, String version) {
             digest.update(buffer, 0, readBytes)
         }
         def checksum = new BigInteger(1, digest.digest()).toString(16)
-        while (checksum.length() < 64) { checksum = "0" + checksum }
+        while (checksum.length() < 64) {
+            checksum = "0" + checksum
+        }
         if (checksum == expectedChecksum) {
             return
         } else {
@@ -200,7 +367,9 @@ def downloadBootstrap(String arch, String expectedChecksum, String version) {
     out.close()
 
     def checksum = new BigInteger(1, digest.digest()).toString(16)
-    while (checksum.length() < 64) { checksum = "0" + checksum }
+    while (checksum.length() < 64) {
+        checksum = "0" + checksum
+    }
     if (checksum != expectedChecksum) {
         file.delete()
         throw new GradleException("Wrong checksum for " + remoteUrl + ": expected: " + expectedChecksum + ", actual: " + checksum)
@@ -216,14 +385,15 @@ clean {
 }
 
 task downloadBootstraps() {
-    doLast {
+    // ZeroTermux modify{@
+    /*doLast {
         def packageVariant = project.ext.packageVariant
         if (packageVariant == "apt-android-7") {
-            def version = "2026.02.12-r1" + "%2B" + "apt.android-7"
-            downloadBootstrap("aarch64", "ea2aeba8819e517db711f8c32369e89e7c52cee73e07930ff91185e1ab93f4f3", version)
-            downloadBootstrap("arm", "a38f4d3b2f735f83be2bf54eff463e86dc32a3e2f9f861c1557c4378d249c018", version)
-            downloadBootstrap("i686", "f5bc0b025b9f3b420b5fcaeefc064f888f5f22a0d6fd7090f4aac0c33eb3555b", version)
-            downloadBootstrap("x86_64", "b7fd0f2e3a4de534be3144f9f91acc768630fc463eaf134ab2e64c545e834f7a", version)
+            def version = "2022.04.28-r5" + "+" + packageVariant
+            downloadBootstrap("aarch64", "4a51a7eb209fe82efc24d52e3cccc13165f27377290687cb82038cbd8e948430", version)
+            downloadBootstrap("arm", "6459a786acbae50d4c8a36fa1c3de6a4dd2d482572f6d54f73274709bd627325", version)
+            downloadBootstrap("i686", "919d212b2f19e08600938db4079e794e947365022dbfd50ac342c50fcedcd7be", version)
+            downloadBootstrap("x86_64", "61b02fdc03ea4f5d9da8d8cf018013fdc6659e6da6cbf44e9b24d1c623580b89", version)
         } else if (packageVariant == "apt-android-5") {
             def version = "2022.04.28-r6" + "+" + packageVariant
             downloadBootstrap("aarch64", "913609d439415c828c5640be1b0561467e539cb1c7080662decaaca2fb4820e7", version)
@@ -233,7 +403,15 @@ task downloadBootstraps() {
         } else {
             throw new GradleException("Unsupported TERMUX_PACKAGE_VARIANT \"" + packageVariant + "\"")
         }
+    }*/
+    doLast {
+        def version = "2026.04.12-r1+apt.android-7"
+        downloadBootstrap("aarch64", "50be71bbdb5ec6ca3ee30baba6ea65ce41aaa477b3a7e587c241e69e8d5a9fdb", version)
+        downloadBootstrap("arm", "589764ab1d72a455e6ed4e23bcbad356a53e8fb4eb9ea039639f9312c216fff9", version)
+        downloadBootstrap("i686", "dd09162388ca1ca446a484f499a92303e1e9051b170b2f036caae9a9ad7dbbbf", version)
+        downloadBootstrap("x86_64", "b72a59c8af1c29acc19ef2214ef04726a178363cd02b125272f8e982ef541e33", version)
     }
+    // @}
 }
 
 afterEvaluate {

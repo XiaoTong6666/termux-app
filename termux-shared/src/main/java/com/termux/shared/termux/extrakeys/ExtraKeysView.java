@@ -20,11 +20,13 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import android.view.HapticFeedbackConstants;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.PopupWindow;
 
@@ -35,6 +37,8 @@ import com.google.android.material.button.MaterialButton;
 import com.termux.shared.R;
 import com.termux.shared.termux.terminal.io.TerminalExtraKeys;
 import com.termux.shared.theme.ThemeUtils;
+import com.termux.terminal.TerminalSession;
+import com.termux.view.TerminalView;
 
 /**
  * A {@link View} showing extra keys (such as Escape, Ctrl, Alt) not normally available on an Android soft
@@ -119,7 +123,9 @@ public final class ExtraKeysView extends GridLayout {
     public static final int ATTR_BUTTON_ACTIVE_BACKGROUND_COLOR = R.attr.extraKeysButtonActiveBackgroundColor;
 
     /** Defines the default fallback value for {@link #mButtonTextColor} if {@link #ATTR_BUTTON_TEXT_COLOR} is undefined. */
-    public static final int DEFAULT_BUTTON_TEXT_COLOR = 0xFFFFFFFF;
+    // ZeroTermux add {@
+	public static int DEFAULT_BUTTON_TEXT_COLOR = 0xFFFFFFFF;
+	// @}
     /** Defines the default fallback value for {@link #mButtonActiveTextColor} if {@link #ATTR_BUTTON_ACTIVE_TEXT_COLOR} is undefined. */
     public static final int DEFAULT_BUTTON_ACTIVE_TEXT_COLOR = 0xFF80DEEA;
     /** Defines the default fallback value for {@link #mButtonBackgroundColor} if {@link #ATTR_BUTTON_BACKGROUND_COLOR} is undefined. */
@@ -678,4 +684,13 @@ public final class ExtraKeysView extends GridLayout {
         return m;
     }
 
+    //初始化颜色
+	// ZeroTermux add {@
+    public void setColorButton() {
+        for (int i = 0; i < getChildCount(); i++) {
+            Button childAt = (Button) getChildAt(i);
+            childAt.setTextColor(DEFAULT_BUTTON_TEXT_COLOR);
+        }
+    }
+	//@}
 }

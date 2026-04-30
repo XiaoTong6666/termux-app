@@ -271,7 +271,7 @@ public class TermuxTerminalSessionActivityClient extends TermuxTerminalSessionCl
                     .setUsage(AudioAttributes.USAGE_ASSISTANCE_SONIFICATION).build()).build();
 
             try {
-                mBellSoundId = mBellSoundPool.load(mActivity, com.termux.shared.R.raw.bell, 1);
+                mBellSoundId = mBellSoundPool.load(mActivity, R.raw.bell, 1);
             } catch (Exception e){
                 // Catch java.lang.RuntimeException: Unable to resume activity {com.termux/com.termux.app.TermuxActivity}: android.content.res.Resources$NotFoundException: File res/raw/bell.ogg from drawable resource ID
                 Logger.logStackTraceWithMessage(LOG_TAG, "Failed to load bell sound pool", e);
@@ -384,7 +384,10 @@ public class TermuxTerminalSessionActivityClient extends TermuxTerminalSessionCl
             TerminalSession newTerminalSession = newTermuxSession.getTerminalSession();
             setCurrentSession(newTerminalSession);
 
-            mActivity.getDrawer().closeDrawers();
+            // ZeroTermux add {@
+            //  mActivity.getDrawer().smoothClose();
+            //  mActivity.getDrawer().closeDrawers();
+            // @}
         }
     }
 
@@ -518,11 +521,14 @@ public class TermuxTerminalSessionActivityClient extends TermuxTerminalSessionCl
     }
 
     public void updateBackgroundColor() {
-        if (!mActivity.isVisible()) return;
-        TerminalSession session = mActivity.getCurrentSession();
-        if (session != null && session.getEmulator() != null) {
-            mActivity.getWindow().getDecorView().setBackgroundColor(session.getEmulator().mColors.mCurrentColors[TextStyle.COLOR_INDEX_BACKGROUND]);
-        }
+        // ZeroTermux.add {@
+        //造成新建会话底部按钮消失
+       // if (!mActivity.isVisible() && mActivity.getDrawer().isOpened()) return;
+       // TerminalSession session = mActivity.getCurrentSession();
+       // if (session != null && session.getEmulator() != null) {
+        //    mActivity.getWindow().getDecorView().setBackgroundColor(session.getEmulator().mColors.mCurrentColors[TextStyle.COLOR_INDEX_BACKGROUND]);
+       // }
+        //@}
     }
 
 }

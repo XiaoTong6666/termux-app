@@ -16,6 +16,7 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.HapticFeedbackConstants;
 import android.view.InputDevice;
@@ -254,6 +255,13 @@ public final class TerminalView extends View {
                     performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
                     startTextSelectionMode(event);
                 }
+
+                // ZeroTermux add {@
+                if(mOnLongClickListener!= null){
+                    mOnLongClickListener.onLong();
+                }
+				// @}
+
             }
         });
         mScroller = new Scroller(context);
@@ -599,11 +607,38 @@ public final class TerminalView extends View {
         }
         return false;
     }
-
+	// ZeroTermux add {@
+    private long doubleClick = 0;
+	// @}
     @SuppressLint("ClickableViewAccessibility")
     @Override
     @TargetApi(23)
     public boolean onTouchEvent(MotionEvent event) {
+
+        // ZeroTermux add {@
+        //判断双击
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if((System.currentTimeMillis() - doubleClick) < 260){
+                if(mDoubleClickListener != null){
+                    mDoubleClickListener.doubleClicke(event.getX());
+                }
+            }
+            doubleClick = System.currentTimeMillis();
+            if (mOneClickListener != null) {
+                mOneClickListener.onClick();
+            }
+        }
+        //判断双指单机
+        if (event.getAction() == MotionEvent.ACTION_POINTER_2_DOWN) {
+            if (mActionPointer2ClickListener != null) {
+                mActionPointer2ClickListener.pointer2Click();
+            }
+        }
+        // 判断单机，
+
+        // @}
+
+
         if (mEmulator == null) return true;
         final int action = event.getAction();
 
@@ -1497,4 +1532,224 @@ public final class TerminalView extends View {
         }
     }
 
+    // ZeroTermux add {@
+    public void sendTextToTerminal(String text) {
+        stopTextSelectionMode();
+        final int textLengthInChars = text.length();
+        for (int i = 0; i < textLengthInChars; i++) {
+            char firstChar = text.charAt(i);
+            int codePoint;
+            if (Character.isHighSurrogate(firstChar)) {
+                if (++i < textLengthInChars) {
+                    codePoint = Character.toCodePoint(firstChar, text.charAt(i));
+                } else {
+                    // At end of string, with no low surrogate following the high:
+                    codePoint = TerminalEmulator.UNICODE_REPLACEMENT_CHAR;
+                }
+            } else {
+                codePoint = firstChar;
+            }
+
+            // Check onKeyDown() for details.
+            if (mClient.readShiftKey())
+                codePoint = Character.toUpperCase(codePoint);
+
+            boolean ctrlHeld = false;
+            if (codePoint <= 31 && codePoint != 27) {
+                if (codePoint == '\n') {
+                    // The AOSP keyboard and descendants seems to send \n as text when the enter key is pressed,
+                    // instead of a key event like most other keyboard apps. A terminal expects \r for the enter
+                    // key (although when icrnl is enabled this doesn't make a difference - run 'stty -icrnl' to
+                    // check the behaviour).
+                    codePoint = '\r';
+                }
+
+                // E.g. penti keyboard for ctrl input.
+                ctrlHeld = true;
+                switch (codePoint) {
+                    case 31:
+                        codePoint = '_';
+                        break;
+                    case 30:
+                        codePoint = '^';
+                        break;
+                    case 29:
+                        codePoint = ']';
+                        break;
+                    case 28:
+                        codePoint = '\\';
+                        break;
+                    default:
+                        codePoint += 96;
+                        break;
+                }
+            }
+
+            inputCodePoint(KEY_EVENT_SOURCE_SOFT_KEYBOARD, codePoint, ctrlHeld, false);
+        }
+    }
+
+
+
+    public void sendTextToTerminalAlt(CharSequence text, boolean isAlt) {
+        stopTextSelectionMode();
+        final int textLengthInChars = text.length();
+        for (int i = 0; i < textLengthInChars; i++) {
+            char firstChar = text.charAt(i);
+            int codePoint;
+            if (Character.isHighSurrogate(firstChar)) {
+                if (++i < textLengthInChars) {
+                    codePoint = Character.toCodePoint(firstChar, text.charAt(i));
+                } else {
+                    // At end of string, with no low surrogate following the high:
+                    codePoint = TerminalEmulator.UNICODE_REPLACEMENT_CHAR;
+                }
+            } else {
+                codePoint = firstChar;
+            }
+
+            // Check onKeyDown() for details.
+            if (mClient.readShiftKey())
+                codePoint = Character.toUpperCase(codePoint);
+
+            boolean ctrlHeld = false;
+            if (codePoint <= 31 && codePoint != 27) {
+                if (codePoint == '\n') {
+                    // The AOSP keyboard and descendants seems to send \n as text when the enter key is pressed,
+                    // instead of a key event like most other keyboard apps. A terminal expects \r for the enter
+                    // key (although when icrnl is enabled this doesn't make a difference - run 'stty -icrnl' to
+                    // check the behaviour).
+                    codePoint = '\r';
+                }
+
+                // E.g. penti keyboard for ctrl input.
+                ctrlHeld = true;
+                switch (codePoint) {
+                    case 31:
+                        codePoint = '_';
+                        break;
+                    case 30:
+                        codePoint = '^';
+                        break;
+                    case 29:
+                        codePoint = ']';
+                        break;
+                    case 28:
+                        codePoint = '\\';
+                        break;
+                    default:
+                        codePoint += 96;
+                        break;
+                }
+            }
+
+            inputCodePoint(KEY_EVENT_SOURCE_SOFT_KEYBOARD, codePoint, false, isAlt);
+        }
+    }
+
+
+    public void sendTextToTerminalCtrl(CharSequence text, boolean isCtrl) {
+        stopTextSelectionMode();
+        final int textLengthInChars = text.length();
+        for (int i = 0; i < textLengthInChars; i++) {
+            char firstChar = text.charAt(i);
+            int codePoint;
+            if (Character.isHighSurrogate(firstChar)) {
+                if (++i < textLengthInChars) {
+                    codePoint = Character.toCodePoint(firstChar, text.charAt(i));
+                } else {
+                    // At end of string, with no low surrogate following the high:
+                    codePoint = TerminalEmulator.UNICODE_REPLACEMENT_CHAR;
+                }
+            } else {
+                codePoint = firstChar;
+            }
+
+            // Check onKeyDown() for details.
+            if (mClient.readShiftKey())
+                codePoint = Character.toUpperCase(codePoint);
+
+            boolean ctrlHeld = false;
+            if (codePoint <= 31 && codePoint != 27) {
+                if (codePoint == '\n') {
+                    // The AOSP keyboard and descendants seems to send \n as text when the enter key is pressed,
+                    // instead of a key event like most other keyboard apps. A terminal expects \r for the enter
+                    // key (although when icrnl is enabled this doesn't make a difference - run 'stty -icrnl' to
+                    // check the behaviour).
+                    codePoint = '\r';
+                }
+
+                // E.g. penti keyboard for ctrl input.
+                ctrlHeld = true;
+                switch (codePoint) {
+                    case 31:
+                        codePoint = '_';
+                        break;
+                    case 30:
+                        codePoint = '^';
+                        break;
+                    case 29:
+                        codePoint = ']';
+                        break;
+                    case 28:
+                        codePoint = '\\';
+                        break;
+                    default:
+                        codePoint += 96;
+                        break;
+                }
+            }
+
+            inputCodePoint(KEY_EVENT_SOURCE_SOFT_KEYBOARD, codePoint, isCtrl, false);
+        }
+    }
+
+    /***************************************** ZERO TERMUX START ******************************************/
+
+    private  DoubleClickListener mDoubleClickListener;
+    private  ActionPointer2ClickListener mActionPointer2ClickListener;
+    private  OneClickListener mOneClickListener;
+    public void setDoubleClickListener(DoubleClickListener mDoubleClickListener){
+        this.mDoubleClickListener = mDoubleClickListener;
+    }
+    public void setActionPointer2ClickListener(ActionPointer2ClickListener mActionPointer2ClickListener){
+        this.mActionPointer2ClickListener = mActionPointer2ClickListener;
+    }
+    public void setOneClickListener(OneClickListener mOneClickListener){
+        this.mOneClickListener = mOneClickListener;
+    }
+    public interface DoubleClickListener{
+        void doubleClicke(float x);
+
+    }
+
+    public interface OneClickListener{
+        void onClick();
+
+    }
+    public interface ActionPointer2ClickListener{
+        void pointer2Click();
+    }
+
+    public String getText555(){
+        return  mEmulator.getScreen().getTranscriptText();
+    }
+
+    private OnLongClickListener mOnLongClickListener;
+
+    public void setOnLongClickListener(OnLongClickListener mOnLongClickListener){
+
+        this.mOnLongClickListener = mOnLongClickListener;
+    }
+
+    public interface OnLongClickListener{
+
+        void onLong();
+
+    }
+
+    public TextSelectionCursorController getTextSelectionCursorControllerView() {
+        return getTextSelectionCursorController();
+    }
+    /***************************************** ZERO TERMUX END ******************************************/
 }

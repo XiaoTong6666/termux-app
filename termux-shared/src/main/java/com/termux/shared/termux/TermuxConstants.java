@@ -927,11 +927,11 @@ public final class TermuxConstants {
         /** Termux app BuildConfig class name */
         public static final String BUILD_CONFIG_CLASS_NAME = TERMUX_PACKAGE_NAME + ".BuildConfig"; // Default: "com.termux.BuildConfig"
 
-        /** Termux app FileShareReceiverActivity class name */
-        public static final String FILE_SHARE_RECEIVER_ACTIVITY_CLASS_NAME = TERMUX_PACKAGE_NAME + ".app.api.file.FileShareReceiverActivity"; // Default: "com.termux.app.api.file.FileShareReceiverActivity"
+        /** ZeroTermux file share receiver alias class name */
+        public static final String FILE_SHARE_RECEIVER_ACTIVITY_CLASS_NAME = TERMUX_PACKAGE_NAME + ".filepicker.TermuxFileShareReceiverActivity"; // Default: "com.termux.filepicker.TermuxFileShareReceiverActivity"
 
-        /** Termux app FileViewReceiverActivity class name */
-        public static final String FILE_VIEW_RECEIVER_ACTIVITY_CLASS_NAME = TERMUX_PACKAGE_NAME + ".app.api.file.FileViewReceiverActivity"; // Default: "com.termux.app.api.file.FileViewReceiverActivity"
+        /** ZeroTermux file view receiver alias class name */
+        public static final String FILE_VIEW_RECEIVER_ACTIVITY_CLASS_NAME = TERMUX_PACKAGE_NAME + ".filepicker.TermuxFileViewReceiverActivity"; // Default: "com.termux.filepicker.TermuxFileViewReceiverActivity"
 
 
         /** Termux app core activity name. */

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.InputDevice;
 import android.view.KeyEvent;
@@ -231,7 +232,7 @@ public class TermuxTerminalViewClient extends TermuxTerminalViewClientBase {
     @Override
     public void copyModeChanged(boolean copyMode) {
         // Disable drawer while copying.
-        mActivity.getDrawer().setDrawerLockMode(copyMode ? DrawerLayout.LOCK_MODE_LOCKED_CLOSED : DrawerLayout.LOCK_MODE_UNLOCKED);
+        //mActivity.getDrawer().(copyMode ? DrawerLayout.LOCK_MODE_LOCKED_CLOSED : DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 
 
@@ -254,9 +255,15 @@ public class TermuxTerminalViewClient extends TermuxTerminalViewClientBase {
             } else if (keyCode == KeyEvent.KEYCODE_DPAD_UP || unicodeChar == 'p' /* previous */) {
                 mTermuxTerminalSessionActivityClient.switchToSession(false);
             } else if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                mActivity.getDrawer().openDrawer(Gravity.LEFT);
+                // ZeroTermux add {@
+                // mActivity.getDrawer().openDrawer(Gravity.LEFT);
+                mActivity.getDrawer().smoothRightOpen();
+                // @}
             } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                mActivity.getDrawer().closeDrawers();
+                // ZeroTermux add {@
+                // mActivity.getDrawer().closeDrawers();
+                mActivity.getDrawer().smoothClose();
+                // @}
             } else if (unicodeChar == 'k'/* keyboard */) {
                 onToggleSoftKeyboardRequest();
             } else if (unicodeChar == 'm'/* menu */) {
@@ -290,6 +297,7 @@ public class TermuxTerminalViewClient extends TermuxTerminalViewClientBase {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent e) {
+        Log.i("TAG", "handleKey termux onKeyUp...");
         // If emulator is not set, like if bootstrap installation failed and user dismissed the error
         // dialog, then just exit the activity, otherwise they will be stuck in a broken state.
         if (keyCode == KeyEvent.KEYCODE_BACK && mActivity.getTerminalView().mEmulator == null) {
@@ -310,9 +318,19 @@ public class TermuxTerminalViewClient extends TermuxTerminalViewClientBase {
             return false;
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
             mVirtualControlKeyDown = down;
+			// ZeroTermux add {@
+            if (mKeyUpDown != null) {
+                mKeyUpDown.keyDown(keyCode);
+            }
+			// @}
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
             mVirtualFnKeyDown = down;
+            // ZeroTermux add {@
+            if (mKeyUpDown != null) {
+                mKeyUpDown.keyDown(keyCode);
+            }
+			// @}
             return true;
         }
         return false;
@@ -797,6 +815,16 @@ public class TermuxTerminalViewClient extends TermuxTerminalViewClientBase {
         String text = ShareUtils.getTextStringFromClipboardIfSet(mActivity, true);
         if (text != null)
             session.getEmulator().paste(text);
+    }
+    /**
+     * ZeroTermux
+     */
+    public interface KeyUpDown {
+        void keyDown(int key);
+    }
+    private KeyUpDown mKeyUpDown;
+    public void setKeyUpDown(KeyUpDown mKeyUpDown) {
+        this.mKeyUpDown = mKeyUpDown;
     }
 
 }
