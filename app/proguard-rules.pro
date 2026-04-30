@@ -37,9 +37,11 @@
 -keep class org.apache.ftpserver.** { *; }
 -dontwarn org.apache.ftpserver.**
 
-# 保留 CmdEntryPoint 及其依赖
--keep class com.termux.x11.CmdEntryPoint { *; }
--keep class com.termux.x11.Loader { *; }
+# 保留 CmdEntryPoint 及其依赖（manifest、JNI、Binder、反射入口）
+-keep class com.termux.x11.** { *; }
+-keep class com.termux.shared.termux.x11.** { *; }
+-dontwarn com.termux.x11.**
+-dontwarn com.termux.shared.termux.x11.**
 
 # 保留所有native方法
 -keepclasseswithmembernames class * {

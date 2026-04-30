@@ -2219,6 +2219,9 @@ public final class TermuxActivity extends AppCompatActivity implements ServiceCo
             } else {
                 ZTUserBean ztUserBeanShow = UserSetManage.Companion.get().getZTUserBean();
                 if (!ztUserBeanShow.isShowCommand()) {
+                    mTerminalView.setVisibility(View.INVISIBLE);
+                    double_tishi.setVisibility(View.GONE);
+                    back_color.setVisibility(View.GONE);
                     back_img.setVisibility(View.GONE);
                     back_video.setVisibility(View.GONE);
                     setExtraKeysViewVisible(false);
