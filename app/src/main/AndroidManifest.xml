@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.termux"
     android:installLocation="internalOnly"
     android:sharedUserId="${TERMUX_PACKAGE_NAME}"
     android:sharedUserLabel="@string/shared_user_label">
@@ -37,12 +36,10 @@
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission
@@ -56,7 +53,6 @@
         android:name=".app.TermuxApplication"
         android:allowBackup="true"
         android:banner="@drawable/banner"
-        android:extractNativeLibs="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
@@ -386,7 +382,7 @@
             android:authorities="${TERMUX_PACKAGE_NAME}.files"
             android:exported="true"
             android:grantUriPermissions="true"
-            android:readPermission="android.permission.permRead" /> <!-- Version < 3.0. DeX Mode and Screen Mirroring support -->
+            android:permission="${TERMUX_PACKAGE_NAME}.permission.RUN_COMMAND" /> <!-- Version < 3.0. DeX Mode and Screen Mirroring support -->
         <meta-data
             android:name="com.samsung.android.keepalive.density"
             android:value="true" /> <!-- Version >= 3.0. DeX Dual Mode support -->

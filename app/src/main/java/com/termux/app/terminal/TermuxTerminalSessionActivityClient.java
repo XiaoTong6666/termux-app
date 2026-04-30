@@ -11,6 +11,7 @@ import android.graphics.Typeface;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
@@ -521,14 +522,17 @@ public class TermuxTerminalSessionActivityClient extends TermuxTerminalSessionCl
     }
 
     public void updateBackgroundColor() {
-        // ZeroTermux.add {@
-        //造成新建会话底部按钮消失
-       // if (!mActivity.isVisible() && mActivity.getDrawer().isOpened()) return;
-       // TerminalSession session = mActivity.getCurrentSession();
-       // if (session != null && session.getEmulator() != null) {
-        //    mActivity.getWindow().getDecorView().setBackgroundColor(session.getEmulator().mColors.mCurrentColors[TextStyle.COLOR_INDEX_BACKGROUND]);
-       // }
-        //@}
+        if (!mActivity.isVisible()) return;
+
+        // ZeroTermux can hide the terminal while X11 content is in front. In that mode,
+        // avoid forcing the activity background from the terminal session, since it can
+        // visually fight with the custom background layers and toolbar state.
+        if (mActivity.mInternalPassage && mActivity.getTerminalView().getVisibility() != View.VISIBLE) return;
+
+        TerminalSession session = mActivity.getCurrentSession();
+        if (session != null && session.getEmulator() != null) {
+            mActivity.getWindow().getDecorView().setBackgroundColor(session.getEmulator().mColors.mCurrentColors[TextStyle.COLOR_INDEX_BACKGROUND]);
+        }
     }
 
 }

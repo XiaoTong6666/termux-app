@@ -49,6 +49,7 @@ import okhttp3.OkHttpClient;
 public class TermuxApplication extends XHApplication {
 // @}
     private static final String LOG_TAG = "TermuxApplication";
+    private Thread.UncaughtExceptionHandler mPreviousUncaughtExceptionHandler;
 
     public void onCreate() {
         super.onCreate();
@@ -119,7 +120,7 @@ public class TermuxApplication extends XHApplication {
     }
 
     /***************************************** ZERO TERMUX START ******************************************/
-    private String collectExceptionInfo(Exception extra) {
+    private String collectExceptionInfo(Throwable extra) {
         ByteArrayOutputStream byteArrayOutput = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(byteArrayOutput);
         extra.printStackTrace(printStream);
@@ -156,12 +157,23 @@ public class TermuxApplication extends XHApplication {
         OkGo.getInstance().setOkHttpClient(okHttpClient);
 
         XXPermissions.setScopedStorage(true);
+        mPreviousUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler((thread, e) -> {
-            Intent intent = new Intent(TermuxApplication.this, UncaughtExceptionHandlerActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra("error", collectExceptionInfo((Exception) e));
-            TermuxApplication.this.startActivity(intent);
-            System.exit(1);//关闭已奔溃的app进程
+            try {
+                Intent intent = new Intent(TermuxApplication.this, UncaughtExceptionHandlerActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("error", collectExceptionInfo(e));
+                TermuxApplication.this.startActivity(intent);
+            } catch (Throwable handlerError) {
+                Logger.logStackTraceWithMessage(LOG_TAG, "Failed to start ZeroTermux crash activity", handlerError);
+            }
+
+            if (mPreviousUncaughtExceptionHandler != null && mPreviousUncaughtExceptionHandler != Thread.getDefaultUncaughtExceptionHandler()) {
+                mPreviousUncaughtExceptionHandler.uncaughtException(thread, e);
+            } else {
+                android.os.Process.killProcess(android.os.Process.myPid());
+                System.exit(1);
+            }
         });
         //初始化定时器
         LibSuManage.getInstall().initTimer();
@@ -178,4 +190,3 @@ public class TermuxApplication extends XHApplication {
     /***************************************** ZERO TERMUX END ******************************************/
 
 }
-

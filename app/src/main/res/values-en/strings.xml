@@ -1071,7 +1071,7 @@ Known Issue: Rapid consecutive back operations may cause black screen in Interna
     <string name="content_ssh_list_toast_ssh_hint">First-time setup, initializing SSH environment...</string>
     <string name="content_ssh_list_toast_ssh_wait">Environment not ready yet, please wait...</string>
     <string name="content_ssh_remove_device">Delete Device</string>
-    <string name="content_ssh_remove_device_dialog">"Are you sure you want to delete '%s'?\n(IP: '%s')"</string>
+    <string name="content_ssh_remove_device_dialog">"Are you sure you want to delete '%1$s'?\n(IP: '%2$s')"</string>
     <string name="content_ssh_remove_ok">Deleted</string>
     <string name="content_ssh_add_device">Add SSH Device</string>
     <string name="content_ssh_alias">Alias</string>

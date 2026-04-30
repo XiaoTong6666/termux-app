@@ -75,6 +75,14 @@ public class ScrollRegionTest extends TerminalTestCase {
 		withTerminalSized(3, 3).enterString("\033[?69h\033[2sABC\033[?6h\033ED").assertLinesAre("ABC", " D ", "   ");
 	}
 
+	public void testRiRespectsLeftMargin() {
+		withTerminalSized(4, 3).enterString("ABCD\033[?69h\033[2;3s\033[?6h\033M").assertLinesAre("A  D", " BC ", "    ");
+	}
+
+	public void testSdRespectsLeftMargin() {
+		withTerminalSized(4, 3).enterString("ABCD\033[?69h\033[2;3s\033[?6h\033[2T").assertLinesAre("A  D", "    ", " BC ");
+	}
+
 	public void testBackwardIndex() {
 		// vttest "Menu 11.3.2: VT420 Cursor-Movement Test", test 7.
 		// Without margins:
@@ -126,5 +134,23 @@ public class ScrollRegionTest extends TerminalTestCase {
 				"aaa   ",
 				"   xxx"
 			);
+	}
+
+	public void testClearingWhenScrollingWithMargins() {
+		int newForeground = 2;
+		int newBackground = 3;
+		int size = 3;
+		TerminalTestCase terminal = withTerminalSized(size, size)
+			.enterString("\033[?69h\033[2s")
+			.enterString("\033[" + (30 + newForeground) + ";" + (40 + newBackground) + "m")
+			.enterString("\r\n\r\n\r\n\r\n\r\n");
+		for (int row = 0; row < size; row++) {
+			for (int col = 0; col < size; col++) {
+				int expectedForeground = col == 0 ? TextStyle.COLOR_INDEX_FOREGROUND : newForeground;
+				int expectedBackground = col == 0 ? TextStyle.COLOR_INDEX_BACKGROUND : newBackground;
+				terminal.assertForegroundColorAt(row, col, expectedForeground);
+				terminal.assertBackgroundColorAt(row, col, expectedBackground);
+			}
+		}
 	}
 }

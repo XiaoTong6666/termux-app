@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.billy.android.swipe.consumer.SlidingConsumer;
 import com.termux.R;
 import com.termux.app.TermuxActivity;
 import com.termux.shared.file.FileUtils;
@@ -231,8 +232,15 @@ public class TermuxTerminalViewClient extends TermuxTerminalViewClientBase {
 
     @Override
     public void copyModeChanged(boolean copyMode) {
-        // Disable drawer while copying.
-        //mActivity.getDrawer().(copyMode ? DrawerLayout.LOCK_MODE_LOCKED_CLOSED : DrawerLayout.LOCK_MODE_UNLOCKED);
+        SlidingConsumer drawer = mActivity.getDrawer();
+        if (drawer == null) return;
+
+        if (copyMode) {
+            if (drawer.isOpened()) drawer.smoothClose();
+            drawer.lockHorizontal();
+        } else {
+            drawer.unlockHorizontal();
+        }
     }
 
 
