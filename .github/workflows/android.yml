@@ -2,7 +2,11 @@ name: 编译ZeroTermux
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: 
+      - main
+      - master
+      - zerotermux
+      - zt
     tags:
       - "ZeroTermux-*"
       - "v*"
